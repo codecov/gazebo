@@ -13,6 +13,23 @@ export enum Theme {
   DARK = 'dark',
 }
 
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      return window.localStorage?.getItem(key) ?? null
+    } catch {
+      return null
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      window.localStorage?.setItem(key, value)
+    } catch {
+      // Silently fail when localStorage is unavailable (e.g. Android WebViews)
+    }
+  },
+}
+
 interface ThemeContextProps {
   theme: Theme
   setTheme: (theme: Theme) => void
@@ -38,7 +55,7 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
     systemTheme = Theme.DARK
   }
 
-  const currentTheme = localStorage.getItem('theme') as Theme
+  const currentTheme = safeLocalStorage.getItem('theme') as Theme
   const [theme, setTheme] = useState<Theme>(currentTheme ?? systemTheme)
   const initialRender = useRef(true)
 
@@ -46,7 +63,7 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
     if (typeof document !== 'undefined' && document.body) {
       document.body.classList.remove(Theme.LIGHT, Theme.DARK)
       document.body.classList.add(theme)
-      localStorage.setItem('theme', theme)
+      safeLocalStorage.setItem('theme', theme)
     }
     initialRender.current = false
   }
@@ -55,7 +72,7 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
     if (typeof document !== 'undefined' && document.body) {
       document.body.classList.remove(Theme.LIGHT, Theme.DARK)
       document.body.classList.add(theme)
-      localStorage.setItem('theme', theme)
+      safeLocalStorage.setItem('theme', theme)
       setTheme(theme)
     }
   }, [])
