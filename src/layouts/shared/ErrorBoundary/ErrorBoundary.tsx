@@ -3,18 +3,20 @@ import { FallbackRender } from '@sentry/react'
 import PropTypes from 'prop-types'
 import { Fragment, ReactElement, ReactNode } from 'react'
 
-import A from 'ui/A'
-
 function DefaultUI() {
   return (
     <div className="flex flex-1 items-center justify-center">
       <p>
         There&apos;s been an error. Please try refreshing your browser, if this
         error persists please{' '}
-        {/* @ts-expect-error ignore until we can convert A component to ts */}
-        <A to={{ pageName: 'support' }} variant="link">
+        <a
+          href="https://codecovpro.zendesk.com/hc/en-us"
+          target="_blank"
+          rel="noreferrer"
+          className="text-ds-blue-darker hover:underline"
+        >
           contact support
-        </A>
+        </a>
         .
       </p>
     </div>
