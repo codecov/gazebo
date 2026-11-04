@@ -201,8 +201,20 @@ export const PullPageDataQueryOpts = ({
       isTeamPlan,
       query,
     ],
-    queryFn: ({ signal }) =>
-      Api.graphql({
+    queryFn: ({ signal }) => {
+      // pullId comes from the URL and may not be a PR number (e.g. legacy
+      // `/compare/<sha>...<sha>` links redirected to `/pull/*`). parseInt would
+      // yield NaN, which is serialized as `null` for the non-null `Int!`
+      // variable, so skip the request and treat the pull as not found.
+      if (!/^\d+$/.test(pullId ?? '')) {
+        return Promise.resolve({
+          pull: null,
+          coverageEnabled: null,
+          bundleAnalysisEnabled: null,
+        })
+      }
+
+      return Api.graphql({
         provider,
         query,
         signal,
@@ -260,5 +272,6 @@ export const PullPageDataQueryOpts = ({
           coverageEnabled,
           bundleAnalysisEnabled,
         }
-      }),
+      })
+    },
   })
