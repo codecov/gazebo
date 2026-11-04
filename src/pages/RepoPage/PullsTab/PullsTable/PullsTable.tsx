@@ -17,7 +17,7 @@ import Spinner from 'ui/Spinner'
 
 import { createPullsTableData } from './createPullsTableData'
 
-import { orderingEnum } from '../enums'
+import { orderingEnum, validOrderValues, ValidOrderValue } from '../enums'
 
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
@@ -73,6 +73,13 @@ export default function PullsTable() {
   const { params } = useLocationParams(defaultParams)
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
+  const rawOrder = (params as { order?: string })?.order
+  const validatedOrder: ValidOrderValue = validOrderValues.includes(
+    rawOrder as ValidOrderValue
+  )
+    ? (rawOrder as ValidOrderValue)
+    : orderingEnum.Newest.order
+
   const {
     data: pullsData,
     isLoading: pullsIsLoading,
@@ -88,9 +95,7 @@ export default function PullsTable() {
       // @ts-expect-error - type issues with useLocationParams
       state: params?.prStates,
     },
-    // useLocationParams needs to be updated to have full types
-    // @ts-expect-error - type issues with useLocationParams
-    orderingDirection: params?.order,
+    orderingDirection: validatedOrder,
   })
 
   useEffect(() => {
