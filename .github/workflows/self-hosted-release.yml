@@ -22,7 +22,7 @@ jobs:
   push-image:
     needs: [create-release]
     if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/') && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@c537f84bec1f241dbd613bbbb44bb5554b43cfe2
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@24a6651367a578c6a013d6df6f522ccafa6a6414
     secrets: inherit
     with:
       push_release: true
