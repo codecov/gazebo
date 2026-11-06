@@ -201,7 +201,7 @@ const query = `query Pull(
   $owner: String!
   $repo: String!
   $pullId: Int!
-  $filters: ImpactedFilesFilters
+  $impactedFilesFilters: ImpactedFilesFilters
 ) {
   owner(username: $owner) {
     isCurrentUserPartOfOrg
@@ -312,7 +312,7 @@ export function usePull({
           owner,
           repo,
           pullId: parseInt(pullId, 10),
-          filters,
+          impactedFilesFilters: filters,
         },
       }).then((res) => {
         const callingFn = 'usePull'
