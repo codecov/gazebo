@@ -211,13 +211,19 @@ class NetworkErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
+    // non-object thrown values (e.g. `undefined`) can't be network or graphql
+    // errors, so let another error boundary handle (and report) them
+    if (error === null || typeof error !== 'object') {
+      return {}
+    }
+
     // if the error is not a network error, we don't do anything and
     // another error boundary will take it from there
-    if (Object.keys(errorToUI).includes(String(error.status))) {
+    if (Object.keys(errorToUI).includes(String(error?.status))) {
       return { hasNetworkError: true, error }
     }
 
-    if (Object.keys(graphQLErrorToUI).includes(error.__typename)) {
+    if (Object.keys(graphQLErrorToUI).includes(error?.__typename)) {
       // there are no errors we want to capture for graphql errors
       return { hasGraphqlError: true, error }
     }
@@ -239,7 +245,7 @@ class NetworkErrorBoundary extends Component {
 
   renderGraphQLError() {
     const { error } = this.state
-    const { illustration, title } = graphQLErrorToUI[error.__typename]
+    const { illustration, title } = graphQLErrorToUI[error?.__typename]
 
     return (
       <article className="mx-auto flex h-full flex-col items-center justify-center">
@@ -249,17 +255,17 @@ class NetworkErrorBoundary extends Component {
           src={illustration}
         />
         <h1 className="mt-6 text-2xl">{title}</h1>
-        <NetworkErrorMessage statusCode={this.state.error.status} />
+        <NetworkErrorMessage statusCode={this.state.error?.status} />
         <ResetHandler
           reset={this.resetErrorBoundary}
-          statusCode={this.state.error.status}
+          statusCode={this.state.error?.status}
         />
       </article>
     )
   }
 
   renderError() {
-    const { status, data } = this.state.error
+    const { status, data } = this.state.error ?? {}
     const { illustration, title, description, showDocs } = errorToUI[status]
 
     return (
