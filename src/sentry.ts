@@ -42,6 +42,12 @@ const deClutterConfig = {
     // See http://toolbar.conduit.com/Developer/HtmlAndGadget/Methods/JSInjection.aspx
     'conduitPage',
     ...customIgnoredErrors,
+    // rrweb (Sentry Replay) monkey-patches DOM methods and can conflict with
+    // React's reconciler when its initialization fails (e.g. adoptedStyleSheets
+    // already defined by a browser extension). These errors are third-party
+    // DOM conflicts, not app bugs.
+    /Failed to execute 'insertBefore' on 'Node'/,
+    /Failed to execute 'removeChild' on 'Node'/,
   ],
   denyUrls: [
     // Facebook flakiness

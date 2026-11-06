@@ -16,7 +16,7 @@ const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const location = useLocation()
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       {location.search.includes('expired') && <SessionExpiredBanner />}
       <GuestHeader />
       <Suspense fallback={<FullPageLoader />}>
@@ -25,7 +25,7 @@ const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         </main>
       </Suspense>
       <Footer />
-    </>
+    </div>
   )
 }
 
