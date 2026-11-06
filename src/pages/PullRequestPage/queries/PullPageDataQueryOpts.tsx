@@ -113,7 +113,7 @@ query PullPageData(
       ... on Repository {
         coverageEnabled
         bundleAnalysisEnabled
-        pull(id: $pullId) {
+        pull(pullId: $pullId) {
           pullId
           commits {
             totalCount
