@@ -29,12 +29,40 @@ if (
 
 ReactModal.setAppElement('#root')
 
+// Paths containing invalid percent-encoding (e.g. an unsubstituted GitLab
+// badge placeholder like `/gl/%25%7Bproject_path%7D`) are decoded by history v4
+// into a string that react-router v6 (via CompatRouter) cannot decode again,
+// which throws a URIError during render. Detect these before the router mounts
+// and redirect to a safe route instead of crashing.
+function isDecodablePathname(pathname: string): boolean {
+  try {
+    const decoded = decodeURI(pathname)
+    decoded.split('/').forEach((segment) => decodeURIComponent(segment))
+    return true
+  } catch {
+    return false
+  }
+}
+
+let invalidPathname: string | null = null
+if (!isDecodablePathname(window.location.pathname)) {
+  invalidPathname = window.location.pathname
+  window.history.replaceState(null, '', '/')
+}
+
 const history = createBrowserHistory()
 
 const TOO_MANY_REQUESTS_ERROR_CODE = 429
 
 initEventTracker()
 setupSentry({ history })
+
+if (invalidPathname !== null) {
+  Sentry.captureMessage('Redirected from undecodable URL pathname', {
+    level: 'warning',
+    extra: { pathname: invalidPathname },
+  })
+}
 
 const ProfiledApp = Sentry.withProfiler(App)
 
