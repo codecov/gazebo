@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -445,7 +446,7 @@ jobs:
     name: Build Self Hosted Image
     secrets: inherit
     if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.14
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@24a6651367a578c6a013d6df6f522ccafa6a6414
     with:
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
       cache_requirements: false
@@ -455,7 +456,7 @@ jobs:
     needs: [build-self-hosted, test-vitest]
     secrets: inherit
     if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/main' && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.14
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@24a6651367a578c6a013d6df6f522ccafa6a6414
     with:
       push_rolling: true
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
