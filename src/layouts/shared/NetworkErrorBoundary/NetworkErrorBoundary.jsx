@@ -213,6 +213,12 @@ class NetworkErrorBoundary extends Component {
   static getDerivedStateFromError(error) {
     // if the error is not a network error, we don't do anything and
     // another error boundary will take it from there
+    // thrown values are not guaranteed to be objects (e.g. `null`), so guard
+    // against them and let the parent error boundary capture them instead
+    if (typeof error !== 'object' || error === null) {
+      return {}
+    }
+
     if (Object.keys(errorToUI).includes(String(error.status))) {
       return { hasNetworkError: true, error }
     }
@@ -285,8 +291,9 @@ class NetworkErrorBoundary extends Component {
   }
 
   render() {
-    if (this.state.hasNetworkError) return this.renderError()
-    if (this.state.hasGraphqlError) return this.renderGraphQLError()
+    if (this.state.error && this.state.hasNetworkError) return this.renderError()
+    if (this.state.error && this.state.hasGraphqlError)
+      return this.renderGraphQLError()
     return <>{this.props.children}</>
   }
 }
