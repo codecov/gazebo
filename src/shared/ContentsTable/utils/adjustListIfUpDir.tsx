@@ -38,7 +38,7 @@ export function adjustListIfUpDir({
     treePaths.length > 1 &&
     displayType === displayTypeParameter.tree
   ) {
-    const upDir = treePaths.at(-2)
+    const upDir = treePaths[treePaths.length - 2]
     const items = [
       {
         name: (
