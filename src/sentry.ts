@@ -5,7 +5,14 @@ import { Route } from 'react-router-dom'
 import config from './config'
 
 // Custom ignored errors
-const customIgnoredErrors: string[] = [
+const customIgnoredErrors: Array<string | RegExp> = [
+  /*
+   * Browser extensions (e.g. Dark Reader style stylesheet proxies) inject an
+   * inline script that overrides `document.adoptedStyleSheets`. On Firefox the
+   * extension's own cleanup fails to redefine the property and throws. Gazebo
+   * never touches `adoptedStyleSheets`, so this is harmless third-party noise.
+   */
+  /redefine (non-configurable )?property:? "?adoptedStyleSheets/i,
   /*
    * App throwing an error if it can't find a module. We have resolved this
    * with two different methods, we're storing assets from previous builds, as
