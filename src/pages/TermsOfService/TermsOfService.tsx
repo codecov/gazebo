@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useLayoutEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { useHistory, useLocation } from 'react-router-dom'
 import { z } from 'zod'
 
 import config from 'config'
@@ -132,6 +133,9 @@ export default function TermsOfService() {
     }
   }, [currentUser, isDirty, reset])
 
+  const location = useLocation()
+  const history = useHistory()
+
   const { mutate, isLoading: isMutationLoading } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.saveTermsAgreement?.error) {
@@ -140,9 +144,12 @@ export default function TermsOfService() {
         return
       }
 
-      const url = new URL(window.location.href)
-      url.searchParams.set('source', ONBOARDING_SOURCE)
-      window.location.href = url.toString()
+      const params = new URLSearchParams(location.search)
+      params.set('source', ONBOARDING_SOURCE)
+      history.push(`${location.pathname}?${params.toString()}`)
+      // const url = new URL(window.location.href)
+      // url.searchParams.set('source', ONBOARDING_SOURCE)
+      // window.location.href = url.toString()
     },
     onError: (error) => setError('apiError', error),
   })
