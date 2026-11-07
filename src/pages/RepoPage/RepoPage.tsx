@@ -3,6 +3,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
+import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
@@ -91,7 +92,9 @@ function Routes({
             {showUnauthorizedMessageCoverage ? (
               <ActivationAlert />
             ) : (
-              <CoverageTab />
+              <ErrorBoundary sentryScopes={[['page', 'coverage-tab']]}>
+                <CoverageTab />
+              </ErrorBoundary>
             )}
           </SentryRoute>
         ) : (
