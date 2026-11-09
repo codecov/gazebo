@@ -14,7 +14,37 @@ const customIgnoredErrors: string[] = [
    */
   // Removing this for the time being, to see if we can resolve it fully
   // 'Failed to fetch dynamically imported module',
+
+  /*
+   * Bug in @sentry-internal/replay SDK (< 9.x patch): the web worker message
+   * listener reads `response.method` without guarding against a null `data`
+   * payload, which can happen in Chrome when a synthetic or external
+   * postMessage arrives with no data. This crash originates entirely inside
+   * Sentry's own replay internals and has no impact on the user.
+   * See: https://github.com/getsentry/sentry-javascript/issues (replay worker null data)
+   */
+  "Cannot read properties of null (reading 'method')",
 ]
+
+/**
+ * Returns true if every stack frame in the event originates from
+ * @sentry-internal/replay, indicating the error is an SDK-internal crash
+ * rather than an application error.
+ */
+const isSentryReplayInternalError = (event: Sentry.ErrorEvent): boolean => {
+  const exceptions = event.exception?.values ?? []
+  if (exceptions.length === 0) return false
+
+  return exceptions.every((exception) => {
+    const frames = exception.stacktrace?.frames ?? []
+    if (frames.length === 0) return false
+    return frames.every(
+      (frame) =>
+        frame.filename?.includes('@sentry-internal/replay') ||
+        frame.filename?.includes('@sentry/replay')
+    )
+  })
+}
 
 // common ignore errors / URLs to de-clutter Sentry
 // https://docs.sentry.io/platforms/javascript/guides/react/configuration/filtering/#decluttering-sentry
@@ -163,6 +193,12 @@ export const setupSentry = ({
     profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (checkForBlockedUserAgents()) {
+        return null
+      }
+
+      // Drop errors that originate entirely from Sentry's own replay internals
+      // (e.g. the null-data worker message listener bug in @sentry-internal/replay).
+      if (isSentryReplayInternalError(event)) {
         return null
       }
 
