@@ -124,6 +124,9 @@ function graphql({
         ) {
           window.location.href = '/login'
         }
+        if (!('data' in data)) {
+          return Promise.reject({ status: res.status, data })
+        }
       }
 
       if (res.ok) {
