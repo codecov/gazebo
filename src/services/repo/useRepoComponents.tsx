@@ -46,6 +46,12 @@ query ComponentMeasurements(
            }
         }
       }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
     }
   }
 }
