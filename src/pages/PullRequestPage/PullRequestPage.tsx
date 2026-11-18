@@ -6,7 +6,6 @@ import { useLocation, useParams } from 'react-router-dom'
 import NotFound from 'pages/NotFound'
 import { useCrumbs } from 'pages/RepoPage/context'
 import { useRepoOverview } from 'services/repo'
-import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
@@ -89,8 +88,6 @@ function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
-
   usePRPageBreadCrumbs({
     owner,
     repo,
@@ -104,7 +101,6 @@ function PullRequestPage() {
       owner,
       repo,
       pullId,
-      isTeamPlan: (isTeamPlan && overview?.private) ?? false,
     })
   )
 
