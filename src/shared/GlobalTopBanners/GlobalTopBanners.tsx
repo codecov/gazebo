@@ -3,8 +3,6 @@ import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import AnnouncementBanner from './AnnouncementBanner'
 import BundleFeedbackBanner from './BundleFeedbackBanner'
 import OktaBanners from './OktaBanners'
-import ProPlanFeedbackBanner from './ProPlanFeedbackBanner'
-import TeamPlanFeedbackBanner from './TeamPlanFeedbackBanner'
 import TokenlessBanner from './TokenlessBanner'
 import TrialBanner from './TrialBanner'
 
@@ -22,14 +20,6 @@ const GlobalTopBanners: React.FC = () => {
 
         <SilentNetworkErrorWrapper>
           <TrialBanner />
-        </SilentNetworkErrorWrapper>
-
-        <SilentNetworkErrorWrapper>
-          <TeamPlanFeedbackBanner />
-        </SilentNetworkErrorWrapper>
-
-        <SilentNetworkErrorWrapper>
-          <ProPlanFeedbackBanner />
         </SilentNetworkErrorWrapper>
 
         <SilentNetworkErrorWrapper>
