@@ -17,6 +17,7 @@ export function useTreePaths(passedPath?: string) {
     return qs.parse(location.search, {
       ignoreQueryPrefix: true,
       depth: 1,
+      arrayLimit: 1000,
     })
   }, [location.search])
 
