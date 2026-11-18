@@ -9,6 +9,9 @@ export const orderingEnum = {
   Newest: { order: 'DESC', name: 'Newest' },
 } as const
 
+export const validOrderValues = ['ASC', 'DESC'] as const
+export type ValidOrderValue = (typeof validOrderValues)[number]
+
 export const filterItems = [
   stateEnum.Open.name,
   stateEnum.Merged.name,
