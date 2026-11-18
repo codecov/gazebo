@@ -14,6 +14,15 @@ const customIgnoredErrors: string[] = [
    */
   // Removing this for the time being, to see if we can resolve it fully
   // 'Failed to fetch dynamically imported module',
+  /*
+   * This error is caused by browser extensions that monkey-patch
+   * HTMLLIElement.prototype.appendChild and attempt to call JSON.stringify on
+   * appended DOM nodes. React attaches internal fiber references (e.g.
+   * __reactFiber$...) directly onto DOM elements, creating a circular
+   * reference that JSON.stringify cannot handle. This is not a bug in our
+   * application code and cannot be fixed on our end.
+   */
+  'Converting circular structure to JSON',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
