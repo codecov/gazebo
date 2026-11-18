@@ -56,7 +56,7 @@ const OwnerContextSchema = z.object({
     .object({
       ownerid: z.number().nullable(),
     })
-    .nullable(),
+    .nullish(),
 })
 
 const ownerContextQuery = `
@@ -88,7 +88,7 @@ export const OwnerContextQueryOpts = ({
         },
       }).then((res) => {
         const callingFn = 'OwnerContextQueryOpts'
-        const parsedRes = OwnerContextSchema.safeParse(res.data)
+        const parsedRes = OwnerContextSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
