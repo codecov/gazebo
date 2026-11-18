@@ -24,13 +24,13 @@ const errorToUI = {
   401: {
     illustration: openUmbrella,
     title: <a href="/login">Please log in.</a>,
-    description: (data) => data.detail,
+    description: (data) => data?.detail,
     showDocs: true,
   },
   403: {
     illustration: upsideDownUmbrella,
     title: 'Unauthorized',
-    description: (data) => data.detail,
+    description: (data) => data?.detail,
     showDocs: true,
   },
   404: {
@@ -42,7 +42,7 @@ const errorToUI = {
   429: {
     illustration: upsideDownUmbrella,
     title: 'Rate limit exceeded',
-    description: (data) => data.detail,
+    description: (data) => data?.detail,
     showDocs: false,
   },
   500: {
