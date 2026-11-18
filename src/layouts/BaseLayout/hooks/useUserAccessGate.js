@@ -21,6 +21,7 @@ function useOnboardingRedirect({ username }) {
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
 
   if (!username) return
+  if (!matchProvider) return
 
   const { setup_action: setupAction } = params
 
