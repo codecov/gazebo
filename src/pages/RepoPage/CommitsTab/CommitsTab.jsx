@@ -30,6 +30,7 @@ const useControlParams = () => {
 
   const { params, updateParams } = useLocationParams(defaultParams)
   let { coverageStatus, search } = params
+  coverageStatus = [].concat(coverageStatus ?? [])
 
   const paramStatesNames = coverageStatus.map((filter) => statusEnum[filter])
 
