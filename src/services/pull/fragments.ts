@@ -276,23 +276,28 @@ export const ImpactedFileSchema = z.object({
       percentCovered: z.number().nullable(),
     })
     .nullable(),
-  segments: z.object({
-    results: z.array(
-      z.object({
-        header: z.string(),
-        hasUnintendedChanges: z.boolean(),
-        lines: z.array(
-          z.object({
-            baseNumber: z.string().nullable(),
-            headNumber: z.string().nullable(),
-            baseCoverage: CoverageLineSchema.nullable(),
-            headCoverage: CoverageLineSchema.nullable(),
-            content: z.string().nullable(),
-          })
-        ),
-      })
-    ),
-  }),
+  segments: z.discriminatedUnion('__typename', [
+    z.object({
+      __typename: z.literal('SegmentComparisons'),
+      results: z.array(
+        z.object({
+          header: z.string(),
+          hasUnintendedChanges: z.boolean(),
+          lines: z.array(
+            z.object({
+              baseNumber: z.string().nullable(),
+              headNumber: z.string().nullable(),
+              baseCoverage: CoverageLineSchema.nullable(),
+              headCoverage: CoverageLineSchema.nullable(),
+              content: z.string().nullable(),
+            })
+          ),
+        })
+      ),
+    }),
+    z.object({ __typename: z.literal('UnknownPath') }),
+    z.object({ __typename: z.literal('ProviderError') }),
+  ]),
 })
 
 export const ComparisonSchema = z.object({
