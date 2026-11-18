@@ -65,6 +65,14 @@
 
     <% if(isProduction) { %>
     <script>
+      // Pendo's guide-loop accesses window.webkit.messageHandlers without a
+      // null check, which throws in Apple Mail's embedded WebView where
+      // window.webkit exists but messageHandlers is undefined.
+      if (window.webkit && !window.webkit.messageHandlers) {
+        window.webkit.messageHandlers = {}
+      }
+    </script>
+    <script>
       ;(function (apiKey) {
         ;(function (p, e, n, d, o) {
           var v, w, x, y, z
