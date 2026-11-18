@@ -5,6 +5,30 @@ import { Fragment, ReactElement, ReactNode } from 'react'
 
 import A from 'ui/A'
 
+const CHUNK_RELOAD_KEY = 'chunk-reload-attempted'
+
+function isChunkLoadError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  if (error.name === 'ChunkLoadError') return true
+  if (
+    error.name === 'SyntaxError' &&
+    error.message.includes('Invalid or unexpected token')
+  )
+    return true
+  return false
+}
+
+function handleChunkLoadError(error: unknown): void {
+  if (!isChunkLoadError(error)) return
+  if (sessionStorage.getItem(CHUNK_RELOAD_KEY)) {
+    // Already tried reloading once — clear the flag and let the error UI render
+    sessionStorage.removeItem(CHUNK_RELOAD_KEY)
+    return
+  }
+  sessionStorage.setItem(CHUNK_RELOAD_KEY, 'true')
+  window.location.reload()
+}
+
 function DefaultUI() {
   return (
     <div className="flex flex-1 items-center justify-center">
@@ -37,6 +61,7 @@ export default function ErrorBoundary({
       beforeCapture={(scope) =>
         sentryScopes.forEach(([key, value]) => scope.setTag(key, value))
       }
+      onError={(error) => handleChunkLoadError(error)}
       fallback={errorComponent}
     >
       {children}
