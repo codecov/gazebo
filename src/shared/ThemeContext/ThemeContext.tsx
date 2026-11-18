@@ -4,9 +4,16 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from 'react'
+
+declare global {
+  interface Window {
+    setTheme?: (theme: string) => void
+  }
+}
 
 export enum Theme {
   LIGHT = 'light',
@@ -59,6 +66,17 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
       setTheme(theme)
     }
   }, [])
+
+  useEffect(() => {
+    window.setTheme = (themeValue: string) => {
+      if (Object.values(Theme).includes(themeValue as Theme)) {
+        handleTheme(themeValue as Theme)
+      }
+    }
+    return () => {
+      window.setTheme = undefined
+    }
+  }, [handleTheme])
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme: handleTheme }}>
