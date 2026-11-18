@@ -17,7 +17,7 @@ export function useYamlConfig({ variables }) {
     queryFn: ({ signal }) =>
       Api.graphql({ provider, query, variables, signal }).then((res) => {
         const yaml = res?.data?.owner?.yaml
-        return yaml
+        return yaml ?? null
       }),
   })
 }
