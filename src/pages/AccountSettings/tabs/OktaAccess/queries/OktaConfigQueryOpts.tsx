@@ -22,7 +22,7 @@ const OwnerSchema = z.object({
 })
 
 const OktaConfigRequestSchema = z.object({
-  owner: OwnerSchema.nullable(),
+  owner: OwnerSchema.nullish(),
 })
 
 const oktaConfigQuery = `
