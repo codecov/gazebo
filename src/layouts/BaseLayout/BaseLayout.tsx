@@ -42,7 +42,7 @@ function OnboardingOrChildren({
 }: OnboardingOrChildrenProps) {
   if (showAgreeToTerms && !isFullExperience) {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<span />}>
         <TermsOfService />
       </Suspense>
     )

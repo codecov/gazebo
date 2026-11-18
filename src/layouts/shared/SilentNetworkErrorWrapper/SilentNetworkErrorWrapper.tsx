@@ -7,7 +7,7 @@ const SilentNetworkErrorWrapper: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<span />}>
       <SilentNetworkError>{children}</SilentNetworkError>
     </Suspense>
   )

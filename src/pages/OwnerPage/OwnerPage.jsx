@@ -74,11 +74,9 @@ function OwnerPage() {
 
   return (
     <div>
-      <Suspense fallback={null}>
-        <SilentNetworkErrorWrapper>
-          <HeaderBanners />
-        </SilentNetworkErrorWrapper>
-      </Suspense>
+      <SilentNetworkErrorWrapper>
+        <HeaderBanners />
+      </SilentNetworkErrorWrapper>
       <div>
         {showOnboardingContainer ? <OnboardingOrg /> : null}
         {ownerData?.isCurrentUserPartOfOrg ? (
