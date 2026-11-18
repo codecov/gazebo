@@ -140,11 +140,12 @@ export const setupSentry = ({
         history,
       }),
 
-      // Applies a `third_party_code: true` tag to all events that contain code that was not bundled with gazebo.
-      // Allows for filtering of browser extension and random browser errors.
+      // Drops events whose stack frames come exclusively from code that was not bundled with gazebo
+      // (e.g. browser extensions or scripts injected by the browser, such as Chrome iOS's page translator).
+      // Events containing at least one gazebo frame are still reported.
       Sentry.thirdPartyErrorFilterIntegration({
         filterKeys: ['gazebo'],
-        behaviour: 'apply-tag-if-contains-third-party-frames',
+        behaviour: 'drop-error-if-exclusively-contains-third-party-frames',
       }),
 
       // Conditionally adds Spotlight browser integration when in development mode
