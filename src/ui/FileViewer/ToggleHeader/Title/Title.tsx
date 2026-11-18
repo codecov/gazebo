@@ -57,7 +57,8 @@ type LocationParams = {
 export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
   const { params, updateParams }: LocationParams =
     useLocationParams(defaultQueryParams)
-  const [selectedFlags, setSelectedFlags] = useState(params?.flags)
+  const flags = ([] as string[]).concat(params?.flags ?? [])
+  const [selectedFlags, setSelectedFlags] = useState(flags)
   const [flagSearch, setFlagSearch] = useState<string | null>(null)
 
   const { data: repoBackfilledData } = useRepoBackfilled()
@@ -81,7 +82,7 @@ export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
 
   const flagNames = new Set()
   if (flagsMeasurementsActive) {
-    params?.flags?.forEach((flag) => flagNames.add(flag))
+    flags.forEach((flag) => flagNames.add(flag))
 
     if (!isUndefined(flagsData)) {
       flagsData?.forEach((flag) => flagNames.add(flag?.name))
