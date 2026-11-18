@@ -45,7 +45,7 @@ const Header = ({
   })
 
   const componentNames = componentsData?.components?.map(
-    (component) => component?.id
+    (component) => component?.name
   )
 
   const value = TimeOptions.find(
