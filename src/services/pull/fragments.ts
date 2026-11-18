@@ -192,6 +192,11 @@ fragment ImpactedFilesOnPull on Pull {
   }
 }`
 
+// NOTE: Any query using this fragment MUST declare:
+//   $path: String!
+//   $filters: SegmentsFilters   <-- NOT ImpactedFilesFilters
+// Using ImpactedFilesFilters will cause a GraphQL type mismatch error
+// because $filters is passed to segments(filters:) which expects SegmentsFilters.
 export const FileComparisonWithBase = `
 fragment FileComparisonWithBase on Pull {
   compareWithBase {
