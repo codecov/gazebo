@@ -98,6 +98,10 @@ const CommitDetailPage: React.FC = () => {
     commitPageData,
   ])
 
+  if ('notFound' in commitPageData && commitPageData.notFound) {
+    return <NotFound />
+  }
+
   if (
     !isLoading &&
     !commitPageData?.commit &&
