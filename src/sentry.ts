@@ -59,6 +59,8 @@ const deClutterConfig = {
     /127\.0\.0\.1:4001\/isrunning/i, // Cacaoweb
     /webappstoolbarba\.texthelp\.com\//i,
     /metrics\.itunes\.apple\.com\.edgesuite\.net\//i,
+    // Pendo analytics - known to emit null unhandled promise rejections
+    /data\.pendo\.io/i,
   ],
 }
 
@@ -142,9 +144,10 @@ export const setupSentry = ({
 
       // Applies a `third_party_code: true` tag to all events that contain code that was not bundled with gazebo.
       // Allows for filtering of browser extension and random browser errors.
+      // Events whose stack is exclusively third-party frames (e.g. Pendo, Amplitude) are dropped entirely.
       Sentry.thirdPartyErrorFilterIntegration({
         filterKeys: ['gazebo'],
-        behaviour: 'apply-tag-if-contains-third-party-frames',
+        behaviour: 'drop-error-if-exclusively-contains-third-party-frames',
       }),
 
       // Conditionally adds Spotlight browser integration when in development mode
@@ -161,8 +164,14 @@ export const setupSentry = ({
     replaysOnErrorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
     // profiling sample rate
     profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
-    beforeSend: (event, _hint) => {
+    beforeSend: (event, hint) => {
       if (checkForBlockedUserAgents()) {
+        return null
+      }
+
+      // Drop non-Error promise rejections with a null value — these originate
+      // from third-party scripts (e.g. Pendo) and are not actionable.
+      if (hint?.originalException === null) {
         return null
       }
 
