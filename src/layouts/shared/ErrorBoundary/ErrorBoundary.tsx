@@ -5,6 +5,33 @@ import { Fragment, ReactElement, ReactNode } from 'react'
 
 import A from 'ui/A'
 
+const CHUNK_LOAD_RELOAD_KEY = 'chunk-load-error-reloaded'
+
+function isChunkLoadError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  return (
+    error.message.includes('Failed to fetch dynamically imported module') ||
+    error.message.includes('Importing a module script failed') || // Safari
+    error.message.includes('error loading dynamically imported module') // Firefox
+  )
+}
+
+function handleChunkLoadError(error: unknown): boolean {
+  if (!isChunkLoadError(error)) return false
+
+  const alreadyReloaded = sessionStorage.getItem(CHUNK_LOAD_RELOAD_KEY)
+  if (!alreadyReloaded) {
+    sessionStorage.setItem(CHUNK_LOAD_RELOAD_KEY, 'true')
+    window.location.reload()
+    return true
+  }
+
+  // Already reloaded once — clear the flag so future navigations can retry,
+  // but let the error boundary render the fallback UI this time.
+  sessionStorage.removeItem(CHUNK_LOAD_RELOAD_KEY)
+  return false
+}
+
 function DefaultUI() {
   return (
     <div className="flex flex-1 items-center justify-center">
@@ -37,6 +64,9 @@ export default function ErrorBoundary({
       beforeCapture={(scope) =>
         sentryScopes.forEach(([key, value]) => scope.setTag(key, value))
       }
+      onError={(error) => {
+        handleChunkLoadError(error)
+      }}
       fallback={errorComponent}
     >
       {children}

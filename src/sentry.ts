@@ -13,7 +13,7 @@ const customIgnoredErrors: string[] = [
    * window to load in the new data (which is triggered by this error).
    */
   // Removing this for the time being, to see if we can resolve it fully
-  // 'Failed to fetch dynamically imported module',
+  'Failed to fetch dynamically imported module',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
