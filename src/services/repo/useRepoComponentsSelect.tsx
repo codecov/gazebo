@@ -110,10 +110,7 @@ export function useRepoComponentsSelect({
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return rejectNetworkError({
-            errorName: 'Not Found Error',
-            errorDetails: { callingFn },
-          })
+          return { components: [] }
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
