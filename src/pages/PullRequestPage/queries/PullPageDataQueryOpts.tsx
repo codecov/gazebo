@@ -227,10 +227,12 @@ export const PullPageDataQueryOpts = ({
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return rejectNetworkError({
-            errorName: 'Not Found Error',
-            errorDetails: { callingFn },
-          })
+          return {
+            pull: null,
+            coverageEnabled: null,
+            bundleAnalysisEnabled: null,
+            notFound: true,
+          }
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -259,6 +261,7 @@ export const PullPageDataQueryOpts = ({
           pull,
           coverageEnabled,
           bundleAnalysisEnabled,
+          notFound: false,
         }
       }),
   })
