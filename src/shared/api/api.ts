@@ -81,6 +81,15 @@ interface GraphQLArgsServiceless {
 
 type GraphQLArgs = GraphQLArgsNoServiceless | GraphQLArgsServiceless
 
+// Safari throws a TypeError with "Load failed" when a fetch is aborted,
+// instead of the standard DOMException AbortError used by Chrome/Firefox.
+function isAbortError(error: unknown, signal?: AbortSignal): boolean {
+  if (signal?.aborted) return true
+  if (error instanceof DOMException && error.name === 'AbortError') return true
+  if (error instanceof TypeError && error.message === 'Load failed') return true
+  return false
+}
+
 function graphql({
   provider,
   query,
@@ -136,6 +145,9 @@ function graphql({
       })
     })
     .catch((error) => {
+      if (isAbortError(error, signal)) {
+        return Promise.reject(Object.assign(error, { name: 'AbortError' }))
+      }
       return Promise.reject(error)
     })
 }
