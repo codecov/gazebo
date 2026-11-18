@@ -16,7 +16,7 @@ const OwnerSchema = z
         repos: z.number().nullish(),
       })
       .nullable(),
-    username: z.string(),
+    username: z.string().nullable(),
   })
   .nullish()
 
