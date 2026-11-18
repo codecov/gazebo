@@ -26,7 +26,7 @@ export const RequestSchema = z.object({
         RepoNotFoundErrorSchema,
       ]),
     })
-    .nullable(),
+    .nullish(),
 })
 
 const query = `query GetRepoOverview($owner: String!, $repo: String!) {
