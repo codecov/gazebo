@@ -344,7 +344,8 @@ export function useNavLinks() {
         }
 
         if (tree) {
-          return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${tree}${query}`
+          const encodedTree = tree.split('/').map(encodeURIComponent).join('/')
+          return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${encodedTree}${query}`
         }
         return `/${provider}/${owner}/${repo}/commit/${commit}/tree${query}`
       },
@@ -741,7 +742,8 @@ export function useNavLinks() {
         }
 
         if (tree) {
-          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}${query}`
+          const encodedTree = tree.split('/').map(encodeURIComponent).join('/')
+          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${encodedTree}${query}`
         }
         return `/${provider}/${owner}/${repo}/pull/${pullId}/tree${query}`
       },
@@ -768,7 +770,10 @@ export function useNavLinks() {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
-        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}${query}`
+        const encodedTree = tree
+          ? tree.split('/').map(encodeURIComponent).join('/')
+          : tree
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${encodedTree}${query}`
       },
       isExternalLink: false,
       text: 'Pull File View',
