@@ -1,3 +1,15 @@
+// Polyfill navigator.connection for browsers that do not support the Network
+// Information API (e.g. desktop Chrome on macOS). The LaunchDarkly SDK's
+// Communication class unconditionally calls .addListener() on this object,
+// which throws a TypeError when the property is undefined.
+if (typeof navigator !== 'undefined' && !navigator.connection) {
+  Object.defineProperty(navigator, 'connection', {
+    value: { addListener: () => {}, removeListener: () => {} },
+    writable: true,
+    configurable: true,
+  })
+}
+
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
