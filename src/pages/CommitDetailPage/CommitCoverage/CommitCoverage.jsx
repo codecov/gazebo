@@ -69,7 +69,7 @@ function CommitRoutes() {
   // is still useful info to the user
   const isMissingBaseCommit = compareTypeName === 'MissingBaseCommit'
 
-  const showIndirectChanges = !(overview.private && isTeamPlan)
+  const showIndirectChanges = !(overview?.private && isTeamPlan)
 
   return (
     <Suspense fallback={<Loader />}>
@@ -181,7 +181,7 @@ function CommitCoverage() {
     })
   )
 
-  const showCommitSummary = !(overview.private && isTeamPlan)
+  const showCommitSummary = !(overview?.private && isTeamPlan)
   const showFirstPullBanner =
     commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
   return (
