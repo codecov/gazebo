@@ -95,6 +95,27 @@ if (!domNode) {
   throw new Error('No root element found')
 }
 
+// Guard against malformed URL pathnames (e.g. containing invalid percent-encoding
+// like "<%=" from template engines or bots). React Router will throw a URIError
+// when trying to decode such paths, which cascades into a TypeError in AppLink.
+let isMalformedPath = false
+try {
+  decodeURIComponent(window.location.pathname)
+} catch (e) {
+  if (e instanceof URIError) {
+    isMalformedPath = true
+    window.location.replace('/')
+  }
+}
+
+if (isMalformedPath) {
+  // Do not mount the app — the page is navigating away to '/'.
+  // eslint-disable-next-line no-throw-literal
+  throw new Error(
+    'Malformed URL pathname detected; redirecting to home page.'
+  )
+}
+
 const root = createRoot(domNode)
 
 root.render(
