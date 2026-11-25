@@ -154,6 +154,7 @@ function CodeTreeTable() {
 
   const calculateColumnTotal = (columnId: keyof Row) => {
     const total = data.reduce((sum, row) => {
+      if (!row) return sum
       const value = row[columnId]
       const numericValue =
         typeof value === 'string' ? parseInt(value, 10) || 0 : 0
