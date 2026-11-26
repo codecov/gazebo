@@ -9,6 +9,7 @@ import { useIntersection } from 'react-use'
 import { dataMarketingType } from 'shared/propTypes'
 import Icon from 'ui/Icon'
 import SearchField from 'ui/SearchField'
+import useDownshiftEnvironment from 'ui/shared/useDownshiftEnvironment'
 import Spinner from 'ui/Spinner'
 
 const SelectClasses = {
@@ -89,6 +90,7 @@ const Select = forwardRef(
   ) => {
     const inputRef = useRef(null)
     const intersectionRef = useRef(null)
+    const environment = useDownshiftEnvironment()
 
     const intersection = useIntersection(intersectionRef, {
       root: null,
@@ -122,6 +124,7 @@ const Select = forwardRef(
       reset,
       selectedItem,
     } = useCombobox({
+      environment,
       items: items,
       initialSelectedItem: value,
       onSelectedItemChange: ({ selectedItem }) => onChange(selectedItem),
