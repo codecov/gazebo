@@ -5,6 +5,8 @@ import { Fragment, ReactElement, ReactNode } from 'react'
 
 import A from 'ui/A'
 
+import { ErrorBoundaryWithRecovery } from './ErrorBoundaryWithRecovery'
+
 function DefaultUI() {
   return (
     <div className="flex flex-1 items-center justify-center">
@@ -33,14 +35,16 @@ export default function ErrorBoundary({
   children,
 }: ErrorBoundaryProps) {
   return (
-    <Sentry.ErrorBoundary
-      beforeCapture={(scope) =>
-        sentryScopes.forEach(([key, value]) => scope.setTag(key, value))
-      }
-      fallback={errorComponent}
-    >
-      {children}
-    </Sentry.ErrorBoundary>
+    <ErrorBoundaryWithRecovery>
+      <Sentry.ErrorBoundary
+        beforeCapture={(scope) =>
+          sentryScopes.forEach(([key, value]) => scope.setTag(key, value))
+        }
+        fallback={errorComponent}
+      >
+        {children}
+      </Sentry.ErrorBoundary>
+    </ErrorBoundaryWithRecovery>
   )
 }
 
