@@ -35,6 +35,9 @@ const query = `mutation CreateUserToken($input: CreateUserTokenInput!) {
     fullToken
     error {
       __typename
+      ... on ResolverError {
+        message
+      }
     }
   }
 }`
